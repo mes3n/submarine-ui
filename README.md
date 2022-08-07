@@ -4,13 +4,17 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project was written in VScode using the Manjaro os.
 
-A few resources to get you started if this is your first Flutter project:
+To set up Flutter for the same configuration follow the following instrctions:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Follow [this link](https://dev.to/awais/configure-flutter-development-environment-on-manjaro-arch-linux-4a0a) to install and set up android-sdk and flutter.          *- Installing the Andoid emulator is not required.*
+ 
+- Further install *clang, cmake, ninja and pkg-config* with pacman.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Add a chromium based browser by *export CHROME_EXECUTABLE={path_to_browser}*
+ 
+- To configure Flutter for vscode install simply flutter extension.
+
+To make sure all is dont right open the command pallette View -> Command Pallette.
+Then search for doctor to run the flutter doctor. Android studio is not installed by this setup.
