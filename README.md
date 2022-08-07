@@ -17,4 +17,4 @@ To set up Flutter for the same configuration follow the following instrctions:
 - To configure Flutter for vscode simply install the flutter extension from the VScode extension manager.
 
 To make sure all is done right open the VScode command palette View -> Command Palette.
-Then search for doctor to run the flutter doctor. Android studio is not installed by this setup.
+Then search for *doctor* to run the flutter doctor. Android studio is not installed by this setup.
