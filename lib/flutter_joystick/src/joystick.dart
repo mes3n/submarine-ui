@@ -53,6 +53,7 @@ class Joystick extends StatefulWidget {
 }
 
 class _JoystickState extends State<Joystick> {
+  // add function for locking control
   final GlobalKey _baseKey = GlobalKey();
 
   Offset _stickOffset = Offset.zero;
@@ -78,7 +79,7 @@ class _JoystickState extends State<Joystick> {
         color: Colors.transparent,
       ),
       child: Stack(
-        alignment: createAlignment(),
+        alignment: _createAlignment(),
         children: [
           Align(
             key: _baseKey,
@@ -96,7 +97,7 @@ class _JoystickState extends State<Joystick> {
     );
   }
 
-  Alignment createAlignment() {
+  Alignment _createAlignment() {
     double d = _stickOffset.distance;
     double x = _stickOffset.dx;
     double y = _stickOffset.dy;
@@ -142,8 +143,13 @@ class _JoystickState extends State<Joystick> {
 
   void _runCallback() {
     _callbackTimer = Timer.periodic(widget.period, (timer) {
-      widget.listener(StickDragDetails(_stickOffset.dx, _stickOffset.dy));
+      _passToListener();
     });
+  }
+
+  void _passToListener() {
+    widget.listener(StickDragDetails(
+        _stickOffset.dx, -_stickOffset.dy)); // up is now positive
   }
 
   @override

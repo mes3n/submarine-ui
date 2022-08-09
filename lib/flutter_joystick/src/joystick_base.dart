@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'joystick.dart';
 
+import '../../palette.dart';
+
 class JoystickBase extends StatelessWidget {
   final JoystickMode mode;
 
@@ -32,7 +34,7 @@ class _JoystickBasePainter extends CustomPainter {
   final JoystickMode mode;
 
   final _borderPaint = Paint()
-    ..color = const Color(0x88242424)
+    ..color = palette.highlight
     ..strokeWidth = 12
     ..style = PaintingStyle.stroke;
   final _centerPaint = Paint()

@@ -22,7 +22,7 @@ class CircleStickOffsetCalculator implements StickOffsetCalculator {
     required Offset currentDragStickPosition,
     required Size baseSize,
   }) {
-    double x = (currentDragStickPosition.dx - startDragStickPosition.dx) * 0.5;
+    double x = (currentDragStickPosition.dx - startDragStickPosition.dx);
     double y = (currentDragStickPosition.dy - startDragStickPosition.dy) * 0.5;
     final radius = baseSize.width / 2;
 

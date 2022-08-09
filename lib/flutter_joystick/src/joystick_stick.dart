@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../palette.dart';
+
 class JoystickStick extends StatelessWidget {
   const JoystickStick({Key? key}) : super(key: key);
   @override
@@ -9,22 +11,23 @@ class JoystickStick extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.5),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 3),
-          )
-        ],
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.lightBlue.shade900,
-            Colors.lightBlue.shade400,
-          ],
-        ),
+        color: palette.accent,
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.blue.withOpacity(0.5),
+        //     spreadRadius: 5,
+        //     blurRadius: 7,
+        //     offset: const Offset(0, 3),
+        //   )
+        // ],
+        // gradient: LinearGradient(
+        //   begin: Alignment.topCenter,
+        //   end: Alignment.bottomCenter,
+        //   colors: [
+        //     Colors.lightBlue.shade900,
+        //     Colors.lightBlue.shade400,
+        //   ],
+        // ),
       ),
     );
   }
