@@ -73,7 +73,7 @@ class _JoystickState extends State<Joystick> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100, // Hey! Dont ask
+      width: 100, // Hey, dont ask!
       height: 150, // set bounding box for aligning stick
       decoration: const BoxDecoration(
         color: Colors.transparent,

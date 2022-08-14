@@ -34,13 +34,21 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               child: PopupMenuButton(
                 icon: const Icon(
-                  Icons.more_vert,
+                  Icons.more_vert_outlined,
                 ),
-                color: palette.highlight,
+                color: palette.hHighlight,
                 itemBuilder: (context) => <PopupMenuItem>[
                   PopupMenuItem(
-                    child:
-                        Text("Settings", style: TextStyle(color: palette.text)),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.settings_outlined,
+                          color: palette.accent,
+                        ),
+                        Text("  Settings",
+                            style: TextStyle(color: palette.accent)),
+                      ],
+                    ),
                     onTap: () {
                       setState(() {
                         selectedWidget = WidgetMarker.settings;
@@ -48,8 +56,16 @@ class HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   PopupMenuItem(
-                    child:
-                        Text("Controls", style: TextStyle(color: palette.text)),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.gamepad_outlined,
+                          color: palette.accent,
+                        ),
+                        Text("  Controls",
+                            style: TextStyle(color: palette.accent)),
+                      ],
+                    ),
                     onTap: () {
                       setState(() {
                         selectedWidget = WidgetMarker.controls;

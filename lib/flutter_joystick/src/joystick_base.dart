@@ -34,11 +34,11 @@ class _JoystickBasePainter extends CustomPainter {
   final JoystickMode mode;
 
   final _borderPaint = Paint()
-    ..color = palette.highlight
+    ..color = palette.lHighlight
     ..strokeWidth = 12
     ..style = PaintingStyle.stroke;
   final _centerPaint = Paint()
-    ..color = const Color(0xDD242424)
+    ..color = palette.hHighlight
     ..style = PaintingStyle.fill;
   // final _linePaint = Paint()
   //   ..color = const Color(0x50616161)

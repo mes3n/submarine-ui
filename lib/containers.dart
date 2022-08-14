@@ -14,7 +14,7 @@ class Livestream extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Container(
         decoration: BoxDecoration(
-            border: Border.all(width: 5, color: palette.highlight),
+            border: Border.all(width: 5, color: palette.lHighlight),
             borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: Image.asset("assets/submarine.jpg"),
       ),
@@ -40,8 +40,9 @@ class Controls extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Joystick(
-                      listener: (details) =>
-                          passer(details, Steering.yawAndPropel),
+                      listener: (details) {
+                        passer(details, Steering.yawAndPropel);
+                      },
                       mode: JoystickMode.all,
                     ),
                   ),
@@ -51,7 +52,9 @@ class Controls extends StatelessWidget {
                   ),
                   Expanded(
                     child: Joystick(
-                      listener: (details) => passer(details, Steering.vertical),
+                      listener: (details) {
+                        passer(details, Steering.vertical);
+                      },
                       mode: JoystickMode.vertical,
                     ),
                   ),
