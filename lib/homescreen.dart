@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'containers.dart';
 import 'palette.dart';
 
+import 'socket.dart';
+
 enum WidgetMarker { controls, settings }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => HomeScreenState();
@@ -14,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   WidgetMarker selectedWidget = WidgetMarker.controls;
+
+  ConnectSocket socket = ConnectSocket();
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +85,20 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    if (socket.enabled) {
+      socket.close();
+    }
+    super.dispose();
+  }
+
   Widget getCustomContainer() {
     switch (selectedWidget) {
       case WidgetMarker.controls:
-        return const Controls();
+        return Controls(socket: socket);
       case WidgetMarker.settings:
-        return const Settings();
+        return Settings(socket: socket);
     }
   }
 }
