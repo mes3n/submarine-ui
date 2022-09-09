@@ -139,6 +139,8 @@ class _JoystickState extends State<Joystick> {
     _callbackTimer?.cancel();
     _startDragStickPosition = Offset.zero;
     widget.onStickDragEnd?.call();
+
+    widget.listener(StickDragDetails(0.0, 0.0)); // reset as well
   }
 
   void _runCallback() {
