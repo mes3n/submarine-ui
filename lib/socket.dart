@@ -1,25 +1,34 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'dart:async';
+
 // move to main or so
 const int portNum = 2300;
-const String ipAddress = '192.168.50.79';
+const String ipAddress = '192.168.50.79'; // local ip to pc
 const int recievedDataMax = 128;
 
 class ConnectSocket {
-  late String ipAddress;
-  late int portNum;
+  String ipAddress = "";
+  int portNum = 2300;
 
   late Socket socket;
   bool enabled = false;
 
-  // ConnectSocket();
+  late Timer callbackTimer;
+  Function callback = () {}; // callbackFunc?
+  int callbackTime = 1;
 
-  Future<void> connect(ipAddress, portNum) async {
-    ipAddress = ipAddress;
-    portNum = portNum;
+  Future<bool> connect(String passIPAddress, int passPortNum) async {
+    ipAddress = passIPAddress;
+    portNum = passPortNum;
 
-    socket = await Socket.connect(ipAddress, portNum);
+    try {
+      socket = await Socket.connect(ipAddress, portNum);
+    } on SocketException {
+      print("Socket Exception");
+      return false;
+    }
     print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
 
     socket.listen(
@@ -36,16 +45,23 @@ class ConnectSocket {
         socket.destroy();
       },
     );
+    callbackTimer = Timer.periodic(Duration(seconds: callbackTime), (timer) {
+      callback();
+    });
     enabled = true;
+
+    return true;
   }
 
-  Future<void> write(data) async {
+  Future<void> send(List<int> data) async {
     print('Client: $data');
-    socket.write(data);
+    socket.add(data); // as uint8 list
     await Future.delayed(const Duration(seconds: 1));
   }
 
-  void close() async {
+  Future<void> close() async {
+    callbackTimer.cancel();
     await socket.close();
+    enabled = false;
   }
 }
