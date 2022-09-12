@@ -16,7 +16,7 @@ class ConnectSocket {
   bool enabled = false;
 
   late Timer callbackTimer;
-  Function callback = () {}; // callbackFunc?
+  Function callbackFunc = () {}; // callbackFunc?
   int callbackTime = 1;
 
   Future<bool> connect(String passIPAddress, int passPortNum) async {
@@ -46,7 +46,7 @@ class ConnectSocket {
       },
     );
     callbackTimer = Timer.periodic(Duration(seconds: callbackTime), (timer) {
-      callback();
+      callbackFunc();
     });
     enabled = true;
 

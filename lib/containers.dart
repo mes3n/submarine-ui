@@ -41,7 +41,7 @@ class ControlsState extends State<Controls> {
 
   @override
   void initState() {
-    widget.socket.callback = () {
+    widget.socket.callbackFunc = () {
       send();
     };
     super.initState();
