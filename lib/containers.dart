@@ -9,6 +9,8 @@ import 'palette.dart';
 
 import 'socket.dart';
 
+enum Steering { speed, angle }
+
 class Livestream extends StatelessWidget {
   const Livestream({super.key});
 
