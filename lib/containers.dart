@@ -2,13 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:submarine_seal/local_wifi.dart';
 
 import 'flutter_joystick/flutter_joystick.dart';
 import 'palette.dart';
 
 import 'socket.dart';
-
-enum Steering { speed, angle }
 
 class Livestream extends StatelessWidget {
   const Livestream({super.key});
@@ -130,6 +129,84 @@ class Settings extends StatefulWidget {
 
 class SettingsState extends State<Settings> {
   static ConnectionState connectionState = ConnectionState.disconnected;
+  static String ipAddress = defualtIPAddress;
+  static int portNum = defualtPortNum;
+  List<String> localIPAddresses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getLocalIPaddresses();
+  }
+
+  void getLocalIPaddresses() async {
+    await scanNetwork(localIPAddresses, 20);
+  }
+
+  Future<void> getConnectionInfo(BuildContext context) async {
+    List<Widget> dialogOptions = [];
+    ipAddress = "";
+
+    for (String localIPAddress in localIPAddresses) {
+      dialogOptions.add(SimpleDialogOption(
+        onPressed: () {
+          ipAddress = localIPAddress;
+          Navigator.pop(context);
+        },
+        child: Text(
+          localIPAddress,
+          style: TextStyle(color: palette.text),
+        ),
+      ));
+    }
+
+    dialogOptions.add(SimpleDialogOption(
+        onPressed: () {
+          ipAddress = "";
+          Navigator.pop(context);
+        },
+        child: Text(
+          "CANCEL",
+          style: TextStyle(color: palette.text),
+        )));
+
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return SimpleDialog(
+          backgroundColor: palette.lHighlight,
+          children: dialogOptions,
+        );
+      },
+    );
+  }
+
+  Future<void> showText(String text) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            text,
+            style: TextStyle(color: palette.text),
+          ),
+          backgroundColor: palette.lHighlight,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "OK",
+                style: TextStyle(color: palette.text),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,10 +229,20 @@ class SettingsState extends State<Settings> {
             ),
             onPressed: () async {
               if (connectionState == ConnectionState.disconnected) {
-                if (await widget.socket.connect(ipAddress, portNum)) {
-                  setState(() {
-                    connectionState = ConnectionState.connected;
-                  });
+                await getConnectionInfo(context);
+                if (ipAddress.isNotEmpty) {
+                  String result =
+                      await widget.socket.connect(ipAddress, portNum);
+                  if (result == "Success") {
+                    setState(() {
+                      connectionState = ConnectionState.connected;
+                    });
+                  } else {
+                    // create alert with error
+                    await showText(result.substring(0, result.indexOf(" (")));
+                  }
+                } else {
+                  ipAddress = defualtIPAddress;
                 }
               } else if (connectionState == ConnectionState.connected) {
                 await widget.socket.close();
@@ -171,11 +258,5 @@ class SettingsState extends State<Settings> {
         ],
       ),
     );
-  }
-
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
   }
 }
