@@ -4,13 +4,13 @@ import 'dart:typed_data';
 import 'dart:async';
 
 // move to main or so
-const int portNum = 2300;
-const String ipAddress = '192.168.50.79'; // local ip to pc
+const int defualtPortNum = 2300;
+const String defualtIPAddress = '192.168.50.79'; // local ip to pc
 const int recievedDataMax = 128;
 
 class ConnectSocket {
   String ipAddress = "";
-  int portNum = 2300;
+  int portNum = defualtPortNum;
 
   late Socket socket;
   bool enabled = false;
@@ -19,15 +19,14 @@ class ConnectSocket {
   Function callbackFunc = () {}; // callbackFunc?
   int callbackTime = 1;
 
-  Future<bool> connect(String passIPAddress, int passPortNum) async {
+  Future<String> connect(String passIPAddress, int passPortNum) async {
     ipAddress = passIPAddress;
     portNum = passPortNum;
 
     try {
       socket = await Socket.connect(ipAddress, portNum);
-    } on SocketException {
-      print("Socket Exception");
-      return false;
+    } on SocketException catch (error) {
+      return error.toString();
     }
     print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
 
@@ -41,7 +40,6 @@ class ConnectSocket {
         socket.destroy();
       },
       onDone: () {
-        print('Server left.');
         socket.destroy();
       },
     );
@@ -50,7 +48,7 @@ class ConnectSocket {
     });
     enabled = true;
 
-    return true;
+    return "Success";
   }
 
   Future<void> send(List<int> data) async {
