@@ -6,6 +6,7 @@ class Palette {
   final Color hHighlight;
   final Color accent;
   final Color text;
+  final Color lText;
 
   const Palette({
     required this.backgorund,
@@ -13,6 +14,7 @@ class Palette {
     required this.hHighlight,
     required this.accent,
     required this.text,
+    required this.lText,
   });
 }
 
@@ -22,4 +24,5 @@ const palette = Palette(
   hHighlight: Color(0xFF242424),
   accent: Color(0xFF0288D1),
   text: Color(0xFFDDDDEE),
+  lText: Color(0xFFCACADB),
 );

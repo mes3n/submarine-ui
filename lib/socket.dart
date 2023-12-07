@@ -5,45 +5,43 @@ import 'dart:async';
 
 // move to main or so
 const int defualtPortNum = 2300;
-const String defualtIPAddress = '192.168.50.79'; // local ip to pc
 const int recievedDataMax = 128;
 
 class ConnectSocket {
   String ipAddress = "";
   int portNum = defualtPortNum;
 
-  late Socket socket;
+  Socket? socket;
   bool enabled = false;
 
-  late Timer callbackTimer;
-  Function callbackFunc = () {}; // callbackFunc?
-  int callbackTime = 1;
+  Timer? callbackTimer;
+  Function callbackFunc = () {};
+  int callbackTimeMs = 500;
 
-  Future<String> connect(String passIPAddress, int passPortNum) async {
-    ipAddress = passIPAddress;
-    portNum = passPortNum;
-
+  Future<String> connect(String ipAddress, int portNum) async {
     try {
       socket = await Socket.connect(ipAddress, portNum);
     } on SocketException catch (error) {
       return error.toString();
     }
-    print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+        'Connected to: ${socket?.remoteAddress.address}:${socket?.remotePort}');
 
-    socket.listen(
+    socket?.listen(
       (Uint8List data) {
-        final serverResponse = String.fromCharCodes(data);
+        final serverResponse = data;
         print('Server: $serverResponse');
       },
       onError: (error) {
         print(error);
-        socket.destroy();
+        close();
       },
       onDone: () {
-        socket.destroy();
+        close();
       },
     );
-    callbackTimer = Timer.periodic(Duration(seconds: callbackTime), (timer) {
+    callbackTimer =
+        Timer.periodic(Duration(milliseconds: callbackTimeMs), (timer) {
       callbackFunc();
     });
     enabled = true;
@@ -53,13 +51,13 @@ class ConnectSocket {
 
   Future<void> send(List<int> data) async {
     print('Client: $data');
-    socket.add(data); // as uint8 list
-    await Future.delayed(const Duration(seconds: 1));
+    socket?.add(data); // as uint8 list
+    // await Future.delayed(const Duration(seconds: 1));
   }
 
   Future<void> close() async {
-    callbackTimer.cancel();
-    await socket.close();
+    callbackTimer?.cancel();
+    await socket?.close();
     enabled = false;
   }
 }
