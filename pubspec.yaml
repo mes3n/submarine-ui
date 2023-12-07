@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_joystick: ^0.0.2
   network_info_plus: ^2.1.4+1
+  lan_scanner: ^3.5.0
+  loading_animation_widget: ^1.2.0+4
 
 dev_dependencies:
   flutter_launcher_icons: "^0.10.0"
