@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
-import 'containers.dart';
+import 'control_panel.dart';
+import 'settings_panel.dart';
+
 import 'palette.dart';
 
 import 'socket.dart';
 
 enum WidgetMarker { controls, settings }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class MainPanel extends StatefulWidget {
+  const MainPanel({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => HomeScreenState();
+  State<StatefulWidget> createState() => MainPanelState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class MainPanelState extends State<MainPanel> {
   WidgetMarker selectedWidget = WidgetMarker.controls;
 
   ConnectSocket socket = ConnectSocket();
@@ -49,7 +51,8 @@ class HomeScreenState extends State<HomeScreen> {
                           Icons.settings_outlined,
                           color: palette.accent,
                         ),
-                        Text("  Settings",
+                        const SizedBox(width: 4),
+                        Text("Settings",
                             style: TextStyle(color: palette.accent)),
                       ],
                     ),
@@ -66,7 +69,8 @@ class HomeScreenState extends State<HomeScreen> {
                           Icons.gamepad_outlined,
                           color: palette.accent,
                         ),
-                        Text("  Controls",
+                        const SizedBox(width: 4),
+                        Text("Controls",
                             style: TextStyle(color: palette.accent)),
                       ],
                     ),
