@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -29,11 +31,16 @@ class SettingsState extends State<Settings> {
 
   @override
   void initState() {
-    super.initState();
-
     if (loadingProgress <= 0.0) {
       getLocalIPaddresses();
     }
+    widget.socket.errorCallback = (SocketException error) {
+      setState(() {
+        connectionState = ConnectionState.disconnected;
+      });
+      showText(error.toString());
+    };
+    super.initState();
   }
 
   void getLocalIPaddresses() async {
@@ -206,9 +213,9 @@ class SettingsState extends State<Settings> {
                           setState(() {
                             connectionState = ConnectionState.loading;
                           });
-                          String result =
+                          SocketResult result =
                               await widget.socket.connect(ip, portNum);
-                          if (result == "Success") {
+                          if (result.ok) {
                             setState(() {
                               connectionState = ConnectionState.connected;
                             });
@@ -216,8 +223,9 @@ class SettingsState extends State<Settings> {
                             setState(() {
                               connectionState = ConnectionState.disconnected;
                             });
+                            String msg = result.error.toString();
                             await showText(
-                                result.substring(0, result.indexOf(" (")));
+                                msg.toString().substring(0, msg.indexOf(" (")));
                           }
                         }
                       } else if (connectionState == ConnectionState.connected) {
@@ -291,8 +299,8 @@ class SettingsState extends State<Settings> {
                 ),
                 const SizedBox(width: 16),
                 SizedBox(
-                    width: 180,
-                    height: 28,
+                    width: 200,
+                    height: 40,
                     child: Column(
                       children: <Widget>[
                         Text(

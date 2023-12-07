@@ -7,6 +7,14 @@ import 'dart:async';
 const int defualtPortNum = 2300;
 const int recievedDataMax = 128;
 
+class SocketResult {
+  bool ok = true;
+  SocketException? error;
+
+  SocketResult(
+    this.ok, [this.error]);
+}
+
 class ConnectSocket {
   String ipAddress = "";
   int portNum = defualtPortNum;
@@ -18,11 +26,13 @@ class ConnectSocket {
   Function callbackFunc = () {};
   int callbackTimeMs = 500;
 
-  Future<String> connect(String ipAddress, int portNum) async {
+  Function errorCallback = (SocketException error) {};
+
+  Future<SocketResult> connect(String ipAddress, int portNum) async {
     try {
       socket = await Socket.connect(ipAddress, portNum);
     } on SocketException catch (error) {
-      return error.toString();
+      return SocketResult(false, error);
     }
     print(
         'Connected to: ${socket?.remoteAddress.address}:${socket?.remotePort}');
@@ -33,7 +43,8 @@ class ConnectSocket {
         print('Server: $serverResponse');
       },
       onError: (error) {
-        print(error);
+        print("Caught error $error");
+        errorCallback(error);
         close();
       },
       onDone: () {
@@ -46,7 +57,7 @@ class ConnectSocket {
     });
     enabled = true;
 
-    return "Success";
+    return SocketResult(true);
   }
 
   Future<void> send(List<int> data) async {
