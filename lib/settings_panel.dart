@@ -34,12 +34,6 @@ class SettingsState extends State<Settings> {
     if (loadingProgress <= 0.0) {
       getLocalIPaddresses();
     }
-    widget.socket.errorCallback = (SocketException error) {
-      setState(() {
-        connectionState = ConnectionState.disconnected;
-      });
-      showText(error.toString());
-    };
     super.initState();
   }
 
@@ -63,9 +57,17 @@ class SettingsState extends State<Settings> {
 
   Function onIPAdressesUpdate = () {};
   void updateLocalIPAdresses(String ip) async {
+    if (localIPAddresses.contains(ip)) return;
+
     localIPAddresses.add(ip);
-    localIPAddresses.sort((a, b) =>
-        int.parse(a.split('.').last).compareTo(int.parse(b.split('.').last)));
+    localIPAddresses.sort((a, b) {
+      try {
+        return int.parse(a.split('.').last)
+            .compareTo(int.parse(b.split('.').last));
+      } on FormatException catch (_) {
+        return a.compareTo(b);
+      }
+    });
 
     if (mounted) {
       onIPAdressesUpdate();
@@ -213,9 +215,19 @@ class SettingsState extends State<Settings> {
                           setState(() {
                             connectionState = ConnectionState.loading;
                           });
-                          SocketResult result =
-                              await widget.socket.connect(ip, portNum);
+                          SocketResult result = await widget.socket.connect(
+                              ip, portNum, onError: (SocketException error) {
+                            setState(() {
+                              connectionState = ConnectionState.disconnected;
+                            });
+                            showText(error.toString());
+                          }, onDisconnect: () {
+                            setState(() {
+                              connectionState = ConnectionState.disconnected;
+                            });
+                          });
                           if (result.ok) {
+                            updateLocalIPAdresses(ip);
                             setState(() {
                               connectionState = ConnectionState.connected;
                             });
