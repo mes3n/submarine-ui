@@ -17,9 +17,13 @@ class MainPanel extends StatefulWidget {
 }
 
 class MainPanelState extends State<MainPanel> {
-  WidgetMarker selectedWidget = WidgetMarker.controls;
+  var selectedWidget = WidgetMarker.controls;
+  var socket = ConnectSocket();
 
-  ConnectSocket socket = ConnectSocket();
+  static Map<WidgetMarker, Widget> widgetMap = {
+    WidgetMarker.controls: Controls(socket: ConnectSocket()),
+    WidgetMarker.settings: Settings(socket: ConnectSocket()),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,7 @@ class MainPanelState extends State<MainPanel> {
         children: <Widget>[
           Align(
             alignment: Alignment.center,
-            child: getCustomContainer(),
+            child: widgetMap[selectedWidget],
           ),
           Align(
             alignment: const Alignment(0.98, 0.95),
@@ -54,6 +58,7 @@ class MainPanelState extends State<MainPanel> {
                         const SizedBox(width: 4),
                         Text("Settings",
                             style: TextStyle(color: palette.accent)),
+                        const SizedBox(width: 20),
                       ],
                     ),
                     onTap: () {
@@ -72,6 +77,7 @@ class MainPanelState extends State<MainPanel> {
                         const SizedBox(width: 4),
                         Text("Controls",
                             style: TextStyle(color: palette.accent)),
+                        const SizedBox(width: 20),
                       ],
                     ),
                     onTap: () {
@@ -91,9 +97,7 @@ class MainPanelState extends State<MainPanel> {
 
   @override
   void dispose() {
-    if (socket.enabled) {
-      socket.close();
-    }
+    socket.close();
     super.dispose();
   }
 

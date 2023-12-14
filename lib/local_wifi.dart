@@ -45,7 +45,6 @@ Future<Function> scanNetwork(
 
   final scanner = LanScanner().icmpScan(subnet, progressCallback: (progress) {
     progressCallback(progress);
-    print('Progress: $progress');
   });
   return scanner.listen((HostModel device) {
     print("Found host: ${device.ip}");

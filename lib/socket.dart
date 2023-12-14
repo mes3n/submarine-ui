@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'dart:async';
 
-const int defualtPortNum = 2300;
 const int recievedDataMax = 128;
 
+const int defualtPortNum = 2300;
 const String handshakeSend = 'MayIDr1ve';
 const String handshakeRecv = 'YesYouMay';
 
@@ -18,17 +18,10 @@ class SocketResult {
 }
 
 class ConnectSocket {
-  String ipAddress = '';
-  int portNum = defualtPortNum;
-
   Socket? socket;
   bool enabled = false;
 
   bool verified = false;
-
-  Timer? callbackTimer;
-  Function callbackFunc = () {};
-  int callbackTimeMs = 500;
 
   Future<SocketResult> connect(String ipAddress, int portNum,
       {Function(SocketException) onError = _returnNull,
@@ -63,17 +56,13 @@ class ConnectSocket {
         if (enabled) close();
       },
     );
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (!verified && enabled) {
         onError(const SocketException('Handshake failed'));
         close();
       }
     });
 
-    callbackTimer =
-        Timer.periodic(Duration(milliseconds: callbackTimeMs), (timer) {
-      callbackFunc();
-    });
     enabled = true;
 
     print(
@@ -88,12 +77,10 @@ class ConnectSocket {
       return;
     }
     print('Client: $data');
-    socket?.add(data); // as uint8 list
-    // await Future.delayed(const Duration(seconds: 1));
+    socket?.add(data);
   }
 
   Future<void> close() async {
-    callbackTimer?.cancel();
     await socket?.close();
     verified = false;
     enabled = false;

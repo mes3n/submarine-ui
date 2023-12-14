@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
@@ -36,12 +38,13 @@ class Controls extends StatefulWidget {
 
 class ControlsState extends State<Controls> {
   double s = 0.0, x = 0.0, y = 0.0;
+  late Timer callbackTimer;
 
   @override
   void initState() {
-    widget.socket.callbackFunc = () {
+    callbackTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       send();
-    };
+    });
     super.initState();
   }
 
@@ -62,7 +65,6 @@ class ControlsState extends State<Controls> {
                     child: Joystick(
                       listener: (StickDragDetails details) {
                         s = details.y;
-                        // passer(details, Steering.speed);
                       },
                       mode: JoystickMode.vertical,
                     ),
@@ -76,7 +78,6 @@ class ControlsState extends State<Controls> {
                       listener: (StickDragDetails details) {
                         x = details.x;
                         y = details.y;
-                        // passer(details, Steering.angle);
                       },
                       mode: JoystickMode.all,
                     ),
@@ -88,18 +89,6 @@ class ControlsState extends State<Controls> {
         ),
       ),
     );
-  }
-
-  void passer(StickDragDetails details, Steering type) {
-    switch (type) {
-      case Steering.speed:
-        s = details.y;
-        break;
-      case Steering.angle:
-        x = details.x;
-        y = details.y;
-        break;
-    }
   }
 
   void send() {
@@ -115,5 +104,11 @@ class ControlsState extends State<Controls> {
       widget.socket.send(List.from(data.buffer.asUint8List().reversed));
       // print(data.buffer.asUint8List().toList());
     }
+  }
+
+  @override
+  void dispose() {
+    callbackTimer.cancel();
+    super.dispose();
   }
 }
