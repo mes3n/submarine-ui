@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'local_wifi.dart';
@@ -20,28 +21,22 @@ class Settings extends StatefulWidget {
 
 class SettingsState extends State<Settings> {
   static int portNum = defualtPortNum;
+  static SocketHandshake handshake = defaultHandshake;
+
   static List<String> localIPAddresses = [];
 
   static var connectionState = ConnectionState.disconnected;
 
-  static bool isScanning = false;
-  Function closeScan = () {};
+  bool isScanning = false;
+  Function cancelScan = () {};
 
-  static double loadingProgress = 0.0;
+  double loadingProgress = 0.0;
 
-  @override
-  void initState() {
-    if (loadingProgress <= 0.0) {
-      getLocalIPaddresses();
-    }
-    super.initState();
-  }
-
-  void getLocalIPaddresses() async {
+  void getLocalIpAddresses() async {
     if (!isScanning) {
       isScanning = true;
-      localIPAddresses = [];
-      closeScan = await scanNetwork(updateLocalIPAdresses, (progress) {
+      cancelScan = await scanNetwork(updateLocalIPAdresses, (progress) {
+        print("Progress: $progress");
         if (!mounted) {
           loadingProgress = progress;
         } else {
@@ -199,9 +194,11 @@ class SettingsState extends State<Settings> {
             const SizedBox(height: 8),
             Row(
               children: <Widget>[
-                SizedBox(
-                  width: 128,
-                  height: 40,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 128,
+                    maxHeight: 40,
+                  ),
                   child: TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: palette.text,
@@ -215,8 +212,9 @@ class SettingsState extends State<Settings> {
                           setState(() {
                             connectionState = ConnectionState.loading;
                           });
-                          SocketResult result = await widget.socket.connect(
-                              ip, portNum, onError: (SocketException error) {
+                          SocketResult result = await widget.socket
+                              .connect(ip, portNum, handshake,
+                                  onError: (SocketException error) {
                             setState(() {
                               connectionState = ConnectionState.disconnected;
                             });
@@ -257,9 +255,11 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                SizedBox(
-                  width: 128,
-                  height: 40,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 128,
+                    maxHeight: 40,
+                  ),
                   child: TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: palette.text,
@@ -268,45 +268,21 @@ class SettingsState extends State<Settings> {
                     ),
                     onPressed: isScanning
                         ? () async {
-                            await closeScan();
+                            await cancelScan();
                             setState(() {
                               isScanning = false;
                             });
                           }
                         : () {
-                            // localIPAddresses = [];
-                            getLocalIPaddresses();
-                            setState(() {});
+                            localIPAddresses = [];
+                            getLocalIpAddresses();
+                            setState(() {
+                              isScanning = true;
+                            });
                           },
                     child: isScanning
                         ? const Text("Stop Scan")
                         : const Text("Scan Network"),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                SizedBox(
-                  width: 128,
-                  height: 40,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: palette.text,
-                      backgroundColor: palette.accent,
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
-                    onPressed: () {
-                      final textField = TextEditingController();
-                      textField.text = portNum.toString();
-                      showText("Enter A Port Number", textField).then((_) {
-                        if (textField.text.isEmpty) return;
-                        int? val = int.tryParse(textField.text);
-                        if (val == null) {
-                          showText("Enter a valid number");
-                        } else {
-                          portNum = val;
-                        }
-                      });
-                    },
-                    child: const Text("Set Net Port"),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -333,6 +309,91 @@ class SettingsState extends State<Settings> {
             ),
             const SizedBox(height: 16),
             Text(
+              "Values",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: palette.text,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 128,
+                    maxHeight: 40,
+                  ),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: palette.text,
+                      backgroundColor: palette.accent,
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () {
+                      final textField = TextEditingController();
+                      textField.text = portNum.toString();
+                      showText("Enter A Port Number", textField).then((_) {
+                        if (textField.text.isEmpty) return;
+                        int? val = int.tryParse(textField.text);
+                        if (val == null) {
+                          showText("Enter a valid number");
+                        } else {
+                          portNum = val;
+                        }
+                      });
+                    },
+                    child: const Text("Set Net Port"),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 128,
+                    maxHeight: 40,
+                  ),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: palette.text,
+                      backgroundColor: palette.accent,
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () {
+                      final textField = TextEditingController();
+                      textField.text = handshake.send;
+                      showText("Enter Handshake to Send", textField).then((_) {
+                        if (textField.text.isEmpty) return;
+                        handshake.send = textField.text;
+                      });
+                    },
+                    child: const Text("Set Handshake Send"),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: palette.text,
+                      backgroundColor: palette.accent,
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () {
+                      final textField = TextEditingController();
+                      textField.text = handshake.recv;
+                      showText("Enter Handshake to Recieve", textField)
+                          .then((_) {
+                        if (textField.text.isEmpty) return;
+                        handshake.recv = textField.text;
+                      });
+                    },
+                    child: const Text("Set Handshake Recieve"),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
               "Submarine (Beta)",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -349,9 +410,8 @@ class SettingsState extends State<Settings> {
 
   @override
   void dispose() {
-    closeScan();
+    cancelScan();
     isScanning = false;
-
     super.dispose();
   }
 }

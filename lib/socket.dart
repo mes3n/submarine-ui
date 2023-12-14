@@ -2,13 +2,19 @@ import 'dart:io';
 
 import 'dart:async';
 
-const int recievedDataMax = 128;
+const recievedDataMax = 128;
 
-const int defualtPortNum = 2300;
-const String handshakeSend = 'MayIDr1ve';
-const String handshakeRecv = 'YesYouMay';
+const defualtPortNum = 2300;
+var defaultHandshake = SocketHandshake('MayIDr1ve', 'YesYouMay');
 
 _returnNull(dynamic arg) => null;
+
+class SocketHandshake {
+  String send;
+  String recv;
+
+  SocketHandshake(this.send, this.recv);
+}
 
 class SocketResult {
   bool ok = true;
@@ -24,6 +30,7 @@ class ConnectSocket {
   bool verified = false;
 
   Future<SocketResult> connect(String ipAddress, int portNum,
+      SocketHandshake handshake,
       {Function(SocketException) onError = _returnNull,
       Function onDisconnect = _returnNull,
       Function(List<int>) onRecieved = _returnNull}) async {
@@ -33,16 +40,16 @@ class ConnectSocket {
       return SocketResult(false, error);
     }
 
-    socket?.write(handshakeSend); // Send handshake
+    socket?.write(handshake.send); // Send handshake
     socket?.listen(
       (List<int> data) async {
         if (verified) {
           print('Server: $data');
           onRecieved(data);
         } else {
-          var handshake = String.fromCharCodes(data);
-          print('Handshake: $handshake');
-          if (handshake == handshakeRecv) {
+          var recv = String.fromCharCodes(data);
+          print('Handshake: $recv');
+          if (recv == handshake.recv) {
             verified = true;
           }
         }

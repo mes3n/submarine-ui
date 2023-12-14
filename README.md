@@ -74,7 +74,7 @@ If the correct IP doesn't show up, try clicking `Stop Scan` (if one is running)
 and then `Start Scan`.
 
 If the application finds a device with the correct port open, it sends a handshake and waits for
-its response, if this fails try configuring the `Set Handshake Recv` and `Set Handshake Send`.
+its response, if this fails try configuring the `Set Handshake Send` and `Set Handshake Recieve`.
 
 When the application is connected, it automatically sends the state of the steering controls 
 to the submarine making it possible to wirelessly steer the submarine.
